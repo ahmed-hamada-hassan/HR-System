@@ -28,9 +28,9 @@ namespace IEEE.Data
 
         public DbSet<Role> Roles { get; set; }
 
-
-
-
+        public DbSet<Committee> committees { get; set; }
+      
+        public DbSet<meetings> meetings { get; set; }
 
     }
 }
