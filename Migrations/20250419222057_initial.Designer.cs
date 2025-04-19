@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IEEE.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250417225546_addMeetingCommitte")]
-    partial class addMeetingCommitte
+    [Migration("20250419222057_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -169,6 +169,21 @@ namespace IEEE.Migrations
                     b.ToTable("meetings");
                 });
 
+            modelBuilder.Entity("Users_Meetings", b =>
+                {
+                    b.Property<int>("MeetingsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MeetingsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("Users_Meetings");
+                });
+
             modelBuilder.Entity("IEEE.Entities.Tasks", b =>
                 {
                     b.HasOne("IEEE.Entities.User", "Head")
@@ -208,7 +223,7 @@ namespace IEEE.Migrations
                         .IsRequired();
 
                     b.HasOne("IEEE.Entities.User", "Creator")
-                        .WithMany()
+                        .WithMany("CreatorMeetings")
                         .HasForeignKey("CreatorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -218,6 +233,21 @@ namespace IEEE.Migrations
                     b.Navigation("Creator");
                 });
 
+            modelBuilder.Entity("Users_Meetings", b =>
+                {
+                    b.HasOne("IEEE.Entities.meetings", null)
+                        .WithMany()
+                        .HasForeignKey("MeetingsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("IEEE.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("IEEE.Entities.Tasks", b =>
                 {
                     b.Navigation("Users_Tasks");
@@ -225,6 +255,8 @@ namespace IEEE.Migrations
 
             modelBuilder.Entity("IEEE.Entities.User", b =>
                 {
+                    b.Navigation("CreatorMeetings");
+
                     b.Navigation("HeadTasks");
 
                     b.Navigation("Users_Tasks");

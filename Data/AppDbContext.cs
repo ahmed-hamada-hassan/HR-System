@@ -16,10 +16,12 @@ namespace IEEE.Data
             modelBuilder.ApplyConfiguration(new TaskConfigurations());
 
             modelBuilder.ApplyConfiguration(new Users_TasksConfigurations());
+            modelBuilder.ApplyConfiguration(new MeetingConfig());
+
+
 
 
         }
-
 
         public DbSet<User> Users { get; set; }
 
@@ -31,6 +33,8 @@ namespace IEEE.Data
         public DbSet<Committee> committees { get; set; }
       
         public DbSet<meetings> meetings { get; set; }
+
+        
 
     }
 }

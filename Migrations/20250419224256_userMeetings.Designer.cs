@@ -12,18 +12,35 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IEEE.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250411145237_update")]
-    partial class update
+    [Migration("20250419224256_userMeetings")]
+    partial class userMeetings
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "8.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("IEEE.Entities.Committee", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("committees");
+                });
 
             modelBuilder.Entity("IEEE.Entities.Role", b =>
                 {
@@ -117,6 +134,56 @@ namespace IEEE.Migrations
                     b.ToTable("Users_Tasks");
                 });
 
+            modelBuilder.Entity("IEEE.Entities.meetings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CommitteeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CreatorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Recap")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CommitteeId");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("meetings");
+                });
+
+            modelBuilder.Entity("Users_Meetings", b =>
+                {
+                    b.Property<int>("MeetingsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UsersId")
+                        .HasColumnType("int");
+
+                    b.HasKey("MeetingsId", "UsersId");
+
+                    b.HasIndex("UsersId");
+
+                    b.ToTable("Users_Meetings");
+                });
+
             modelBuilder.Entity("IEEE.Entities.Tasks", b =>
                 {
                     b.HasOne("IEEE.Entities.User", "Head")
@@ -147,6 +214,40 @@ namespace IEEE.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("IEEE.Entities.meetings", b =>
+                {
+                    b.HasOne("IEEE.Entities.Committee", "Committee")
+                        .WithMany()
+                        .HasForeignKey("CommitteeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("IEEE.Entities.User", "Creator")
+                        .WithMany("CreatorMeetings")
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Committee");
+
+                    b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("Users_Meetings", b =>
+                {
+                    b.HasOne("IEEE.Entities.meetings", null)
+                        .WithMany()
+                        .HasForeignKey("MeetingsId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("IEEE.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UsersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("IEEE.Entities.Tasks", b =>
                 {
                     b.Navigation("Users_Tasks");
@@ -154,6 +255,8 @@ namespace IEEE.Migrations
 
             modelBuilder.Entity("IEEE.Entities.User", b =>
                 {
+                    b.Navigation("CreatorMeetings");
+
                     b.Navigation("HeadTasks");
 
                     b.Navigation("Users_Tasks");
