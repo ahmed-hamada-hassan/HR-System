@@ -3,12 +3,40 @@
   "WorkspaceRootPath": "E:\\projects\\Backend\\websiteieee\\hr-system\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|e:\\projects\\backend\\websiteieee\\hr-system\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|solutionrelative:appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|e:\\projects\\backend\\websiteieee\\hr-system\\migrations\\20250420193646_userendpoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|solutionrelative:migrations\\20250420193646_userendpoint.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|e:\\projects\\backend\\websiteieee\\hr-system\\configurations\\taskconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|solutionrelative:configurations\\taskconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|e:\\projects\\backend\\websiteieee\\hr-system\\controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|solutionrelative:controllers\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|e:\\projects\\backend\\websiteieee\\hr-system\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|solutionrelative:controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|e:\\projects\\backend\\websiteieee\\hr-system\\controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|solutionrelative:controllers\\accountcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|e:\\projects\\backend\\websiteieee\\hr-system\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|solutionrelative:entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|e:\\projects\\backend\\websiteieee\\hr-system\\dto\\edituserdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|solutionrelative:dto\\edituserdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|e:\\projects\\backend\\websiteieee\\hr-system\\dto\\logindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|solutionrelative:dto\\logindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|e:\\projects\\backend\\websiteieee\\hr-system\\dto\\registerdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|solutionrelative:dto\\registerdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|e:\\projects\\backend\\websiteieee\\hr-system\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{4AE50D17-3059-470C-4DCB-9CAD4556A6AD}|IEEE.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -18,32 +46,123 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "TaskConfiguration.cs",
-              "DocumentMoniker": "E:\\projects\\Backend\\websiteieee\\hr-system\\Configurations\\TaskConfiguration.cs",
-              "RelativeDocumentMoniker": "Configurations\\TaskConfiguration.cs",
-              "ToolTip": "E:\\projects\\Backend\\websiteieee\\hr-system\\Configurations\\TaskConfiguration.cs",
-              "RelativeToolTip": "Configurations\\TaskConfiguration.cs",
+              "DocumentIndex": 0,
+              "Title": "20250420193646_userendpoint.cs",
+              "DocumentMoniker": "E:\\projects\\Backend\\websiteieee\\hr-system\\Migrations\\20250420193646_userendpoint.cs",
+              "RelativeDocumentMoniker": "Migrations\\20250420193646_userendpoint.cs",
+              "ToolTip": "E:\\projects\\Backend\\websiteieee\\hr-system\\Migrations\\20250420193646_userendpoint.cs",
+              "RelativeToolTip": "Migrations\\20250420193646_userendpoint.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-19T10:19:51.407Z",
+              "WhenOpened": "2025-04-20T19:36:46.699Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "E:\\projects\\Backend\\websiteieee\\hr-system\\appsettings.json",
-              "RelativeDocumentMoniker": "appsettings.json",
-              "ToolTip": "E:\\projects\\Backend\\websiteieee\\hr-system\\appsettings.json",
-              "RelativeToolTip": "appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-04-18T22:57:06.853Z",
+              "DocumentIndex": 5,
+              "Title": "EditUserDto.cs",
+              "DocumentMoniker": "E:\\projects\\Backend\\websiteieee\\hr-system\\DTO\\EditUserDto.cs",
+              "RelativeDocumentMoniker": "DTO\\EditUserDto.cs",
+              "ToolTip": "E:\\projects\\Backend\\websiteieee\\hr-system\\DTO\\EditUserDto.cs",
+              "RelativeToolTip": "DTO\\EditUserDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-20T19:14:20.186Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "E:\\projects\\Backend\\websiteieee\\hr-system\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AdminController.cs",
+              "ToolTip": "E:\\projects\\Backend\\websiteieee\\hr-system\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "Controllers\\AdminController.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAA0AAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-20T19:04:57.581Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "LoginDto.cs",
+              "DocumentMoniker": "E:\\projects\\Backend\\websiteieee\\hr-system\\DTO\\LoginDto.cs",
+              "RelativeDocumentMoniker": "DTO\\LoginDto.cs",
+              "ToolTip": "E:\\projects\\Backend\\websiteieee\\hr-system\\DTO\\LoginDto.cs",
+              "RelativeToolTip": "DTO\\LoginDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-20T19:00:44.168Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "RegisterDto.cs",
+              "DocumentMoniker": "E:\\projects\\Backend\\websiteieee\\hr-system\\DTO\\RegisterDto.cs",
+              "RelativeDocumentMoniker": "DTO\\RegisterDto.cs",
+              "ToolTip": "E:\\projects\\Backend\\websiteieee\\hr-system\\DTO\\RegisterDto.cs",
+              "RelativeToolTip": "DTO\\RegisterDto.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAQwCAAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-20T18:58:56.712Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AccountController.cs",
+              "DocumentMoniker": "E:\\projects\\Backend\\websiteieee\\hr-system\\Controllers\\AccountController.cs",
+              "RelativeDocumentMoniker": "Controllers\\AccountController.cs",
+              "ToolTip": "E:\\projects\\Backend\\websiteieee\\hr-system\\Controllers\\AccountController.cs",
+              "RelativeToolTip": "Controllers\\AccountController.cs",
+              "ViewState": "AgIAABUAAAAAAAAAAAAQwC4AAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-20T17:25:30.316Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "User.cs",
+              "DocumentMoniker": "E:\\projects\\Backend\\websiteieee\\hr-system\\Entities\\User.cs",
+              "RelativeDocumentMoniker": "Entities\\User.cs",
+              "ToolTip": "E:\\projects\\Backend\\websiteieee\\hr-system\\Entities\\User.cs",
+              "RelativeToolTip": "Entities\\User.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-20T17:36:34.097Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UserController.cs",
+              "DocumentMoniker": "E:\\projects\\Backend\\websiteieee\\hr-system\\Controllers\\UserController.cs",
+              "RelativeDocumentMoniker": "Controllers\\UserController.cs",
+              "ToolTip": "E:\\projects\\Backend\\websiteieee\\hr-system\\Controllers\\UserController.cs",
+              "RelativeToolTip": "Controllers\\UserController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAADQAAAAgAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-20T19:09:02.166Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\projects\\Backend\\websiteieee\\hr-system\\Program.cs",
+              "RelativeDocumentMoniker": "Program.cs",
+              "ToolTip": "E:\\projects\\Backend\\websiteieee\\hr-system\\Program.cs",
+              "RelativeToolTip": "Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-20T19:21:36.727Z",
               "EditorCaption": ""
             }
           ]

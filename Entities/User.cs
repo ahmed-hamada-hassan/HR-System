@@ -2,14 +2,22 @@
 
 namespace IEEE.Entities
 {
-    public class User 
+    public class User : IdentityUser<int>
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
 
+        public string Faculty { get; set; }
+
         public string City { get; set; }
+
+        public bool IsActive { get; set; } = false;
+
+        public string Role { get; set; }
+
+
 
         public int? CommitteeId { get; set; }
 
