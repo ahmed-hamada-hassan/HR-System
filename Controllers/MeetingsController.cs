@@ -17,7 +17,7 @@ namespace IEEE.Controllers
             _context = context;
         }
 
-        // GET: api/Meetings
+        
         [HttpGet]
         public async Task<ActionResult<IEnumerable<meetings>>> GetMeetings()
         {
@@ -27,7 +27,7 @@ namespace IEEE.Controllers
                 .ToListAsync();
         }
 
-        // GET: api/Meetings/5
+        
         [HttpGet("{id}")]
         public async Task<ActionResult<meetings>> GetMeeting(int id)
         {
@@ -42,7 +42,7 @@ namespace IEEE.Controllers
             return meeting;
         }
 
-        // POST: api/Meetings
+        
         [HttpPost]
         public async Task<ActionResult<meetings>> PostMeeting(meetings meeting)
         {
@@ -52,7 +52,7 @@ namespace IEEE.Controllers
             return CreatedAtAction(nameof(GetMeeting), new { id = meeting.Id }, meeting);
         }
 
-        // PUT: api/Meetings/5
+       
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMeeting(int id, meetings meeting)
         {
@@ -76,7 +76,7 @@ namespace IEEE.Controllers
             return NoContent();
         }
 
-        // DELETE: api/Meetings/5
+        
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMeeting(int id)
         {
