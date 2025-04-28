@@ -17,11 +17,9 @@ namespace IEEE.Data
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new TaskConfigurations());
-            modelBuilder.ApplyConfiguration(new MeetingConfiguration());
             modelBuilder.ApplyConfiguration(new Users_TasksConfigurations());
             modelBuilder.ApplyConfiguration(new MeetingConfig());
 
-            modelBuilder.ApplyConfiguration(new MeetingConfiguration());
 
            // modelBuilder.Entity<User>().ToTable("AspNetUsers");
 
