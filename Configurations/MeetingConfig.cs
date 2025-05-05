@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace IEEE.Configurations
 {
-    public class MeetingConfiguration : IEntityTypeConfiguration<Meeting>
+    public class MeetingConfig : IEntityTypeConfiguration<Meeting>
     {
         public void Configure(EntityTypeBuilder<Meeting> builder)
         {
@@ -15,26 +15,26 @@ namespace IEEE.Configurations
             builder.Property(m => m.Description).IsRequired();
             builder.Property(m => m.Recap).IsRequired();
 
-            // علاقة Meeting مع Committee (many-to-one)
             builder.HasOne(m => m.Committee)
                 .WithMany(c => c.Meetings)
-                .HasForeignKey(m => m.CommitteeId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(m => m.CommitteeId);
 
-            // علاقة Meeting مع Users (many-to-many)
-            builder.HasMany(m => m.Users)
-                .WithMany(u => u.Meetings)
-                .UsingEntity<MeetingUser>(
-                    j => j.HasOne(mu => mu.User)
-                          .WithMany(u => u.MeetingUsers)
-                          .HasForeignKey(mu => mu.UserId),
-                    j => j.HasOne(mu => mu.Meeting)
-                          .WithMany(m => m.MeetingUsers)
-                          .HasForeignKey(mu => mu.MeetingId),
-                    j =>
-                    {
-                        j.HasKey(mu => new { mu.MeetingId, mu.UserId });
-                    });
+
+            builder.HasOne(m => m.Head)
+                .WithMany(h => h.HeadMeetings)
+                .HasForeignKey(m => m.HeadId);
+
+
+            builder.HasMany(u => u.Users)
+             .WithMany(m => m.Meetings)
+             .UsingEntity<Dictionary<string, object>>(
+                 "Users_Meetings",
+                 j => j.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade),
+                 j => j.HasOne<Meeting>().WithMany().HasForeignKey("MeetingId").OnDelete(DeleteBehavior.Restrict)
+
+                 );
+
+
         }
     }
 }

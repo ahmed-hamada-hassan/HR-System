@@ -8,7 +8,10 @@
         public int HeadId { get; set; }
         public User? Head { get; set; }
 
-        public ICollection<Users_Tasks>? Users_Tasks { get; set; } = new List<Users_Tasks>();
+        
+        public int CommitteeId { get; set; }
+        public Committee? Committee { get; set; }
 
+        public ICollection<Users_Tasks>? Users_Tasks { get; set; } = new List<Users_Tasks>();
     }
 }

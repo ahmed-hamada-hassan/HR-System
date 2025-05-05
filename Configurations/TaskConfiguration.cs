@@ -1,6 +1,9 @@
 ﻿using IEEE.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Threading.Tasks;
+
+
 
 namespace IEEE.Configurations
 {
@@ -12,11 +15,14 @@ namespace IEEE.Configurations
 
             builder.Property(x => x.Id).ValueGeneratedOnAdd();
 
-
             builder.HasOne(t => t.Head)
-                .WithMany(h => h.HeadTasks)
+                .WithMany(h => h.HeadTasks)  
                 .HasForeignKey(t => t.HeadId);
 
+
+            builder.HasOne(t => t.Committee)
+                .WithMany(c => c.Tasks)
+                .HasForeignKey(t => t.CommitteeId);
 
 
 
