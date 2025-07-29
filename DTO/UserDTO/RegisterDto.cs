@@ -30,7 +30,7 @@ namespace IEEE.DTO.UserDTO
         public string Email { get; set; }
 
         [Required]
-        public int CommitteeId { get; set; }
+        public List<int> CommitteeIds { get; set; }      // IDs للكوميتيز اللي هيختارها
 
         public string Year { get; set; }
         public string Sex { get; set; }
@@ -38,8 +38,8 @@ namespace IEEE.DTO.UserDTO
         public string City { get; set; }
         public string Phone { get; set; }
         public string Goverment { get; set; }
-        public string Role { get; set; }
-        public string Committee { get; set; }
+        public string? RoleName { get; set; }
+
 
 
 
