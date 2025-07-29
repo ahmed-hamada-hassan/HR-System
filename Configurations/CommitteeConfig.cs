@@ -16,6 +16,10 @@ namespace IEEE.Configurations
                 .HasForeignKey(c => c.HeadId);
 
 
+            builder.HasMany(c => c.Users)
+                .WithMany(u => u.Committees);
+
+
         }
     }
 

@@ -1,12 +1,14 @@
-﻿using IEEE.Entities;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+﻿using IEEE.Data;
+using IEEE.DTO.UserDTO;
+using IEEE.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using IEEE.DTO.UserDTO;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace IEEE.Controllers
 {
@@ -14,6 +16,8 @@ namespace IEEE.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private readonly RoleManager<IdentityRole<int>> _roleManager;
+        private readonly AppDbContext _context;
         private readonly UserManager<User> userManager;
         private readonly IConfiguration config;
 
@@ -24,50 +28,73 @@ namespace IEEE.Controllers
         }
 
 
+
         [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterDto UserFromRequest)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+
+
+            User user = new User
             {
+                UserName = UserFromRequest.UserName,
+                FName = UserFromRequest.FName,
+                MName = UserFromRequest.MName,
+                LName = UserFromRequest.LName,
+                Faculty = UserFromRequest.Faculty,
+                Email = UserFromRequest.Email,
+                City = UserFromRequest.City,
+                Phone = UserFromRequest.Phone,
+                Sex = UserFromRequest.Sex,
+                Goverment = UserFromRequest.Goverment,
+                Year = UserFromRequest.Year,
+                IsActive = false
+            };
 
-                //save in DB 
+            // حفظ المستخدم بالباسورد
+            IdentityResult result = await userManager.CreateAsync(user, UserFromRequest.Password);
 
-                User user = new User();
-                user.UserName = UserFromRequest.UserName;
-                user.FName = UserFromRequest.FName;
-                user.MName = UserFromRequest.MName;
-                user.LName = UserFromRequest.LName;
-                user.Faculty = UserFromRequest.Faculty;
-                user.Email = UserFromRequest.Email;
-                user.City  = UserFromRequest.City;
-                user.Role = UserFromRequest.Role;
-                user.Password = UserFromRequest.Password;
-                user.Committee = UserFromRequest.Committee;
-                user.Phone = UserFromRequest.Phone;
-                user.Sex = UserFromRequest.Sex;
-                user.Goverment = UserFromRequest.Goverment;
-                user.Year        = UserFromRequest.Year;
-                user.IsActive = false;
-                
-
-                IdentityResult result = await userManager.CreateAsync(user, UserFromRequest.Password);
-
-                if (result.Succeeded)
+            if (result.Succeeded)
+            {
+                //  إضافة الرول
+                if (!string.IsNullOrEmpty(UserFromRequest.RoleName))
                 {
-                    return Ok("created");
-                }
-                foreach (var item in result.Errors)
-                {
-                    ModelState.AddModelError("Password", item.Description);
+                    var roleExists = await _roleManager.RoleExistsAsync(UserFromRequest.RoleName);
+                    if (!roleExists)
+                        return BadRequest("Invalid role");
+
+                    await userManager.AddToRoleAsync(user, UserFromRequest.RoleName);
                 }
 
+                // إضافة الكوميتيز
+                if (UserFromRequest.CommitteeIds != null && UserFromRequest.CommitteeIds.Any())
+                {
+                    var committees = await _context.Committees
+                        .Where(c => UserFromRequest.CommitteeIds.Contains(c.Id))
+                        .ToListAsync();
 
+                    user.Committees = committees;
+
+                    _context.Users.Update(user); 
+                    await _context.SaveChangesAsync();
+                }
+
+                return Ok("User created successfully");
+            }
+
+            // في حالة وجود أخطاء
+            foreach (var item in result.Errors)
+            {
+                ModelState.AddModelError("Password", item.Description);
             }
 
             return BadRequest(ModelState);
-
-
         }
+
+
+
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginDto userFromRequest)
         {

@@ -15,12 +15,6 @@ namespace IEEE.Configurations
             builder.Property(u => u.LName).IsRequired();
             builder.Property(u => u.Email).IsRequired();
 
-
-
-            //builder.HasOne(u => u.Committee)
-            //       .WithMany(c => c.Users)
-            //       .HasForeignKey(u => u.CommitteeId);
-
         }
     }
 }
