@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IEEE.Controllers
 {
@@ -15,21 +16,18 @@ namespace IEEE.Controllers
     public class UsersController : ControllerBase
     {
         private readonly AppDbContext _context;
-        public UsersController(AppDbContext context)
-        {
-            _context = context;
-        }
+        
         private readonly Microsoft.AspNetCore.Identity.UserManager<User> _userManager;
 
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly RoleManager<ApplicationRole> _roleManager;
 
-
-        public UsersController(Microsoft.AspNetCore.Identity.UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        public UsersController(AppDbContext appDbContext,UserManager<User> userManager, RoleManager<ApplicationRole> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
-
+            _context = appDbContext;
         }
+
 
         // GET: api/Users/GetAllUsers
         [HttpGet("GetAllUsers")]
@@ -41,16 +39,19 @@ namespace IEEE.Controllers
 
             foreach (var user in users)
             {
-                var roles = await _userManager.GetRolesAsync(user);
-                var role = roles.FirstOrDefault();
+                var userRolesIds = await _context.UserRoles
+                    .Where(ur => ur.UserId == user.Id)
+                    .Select(ur => ur.RoleId)
+                    .ToListAsync();
 
                 var dto = new GetUsersDto
                 {
+                    Id = user.Id,
                     UserName = user.UserName,
                     Eamil = user.Email,
                     IsActive = user.IsActive,
-                    CommitteeNames = user.Committees.Select(c => c.Name).ToList(),
-                    Role = role
+                    RoleId = user.RoleId  ,
+                    CommitteeId = user.CommitteeId,
                 };
 
                 userdto.Add(dto);
@@ -78,13 +79,35 @@ namespace IEEE.Controllers
                 Email = dto.Email,
                 Faculty = dto.Faculty,
                 City    =dto.City,
-                IsActive = false ,
-                CommitteeId= dto.CommitteeId,
-                
+                IsActive = dto.IsActive ,
+                CommitteeId = dto.CommitteeIds != null && dto.CommitteeIds.Any() ? dto.CommitteeIds.FirstOrDefault() : null, // Assuming the first committee is assigned
+                RoleId = dto.RoleId
 
             };
 
+            // التحقق من وجود الـ Role في AspNetRoles
+            var roleExists = await _context.Roles
+                .AnyAsync(r => r.Id == dto.RoleId);
+
+            if (!roleExists)
+            {
+                throw new ArgumentException($"Role with ID {dto.RoleId} does not exist in AspNetRoles.");
+            }
+
+            // التحقق من عدم تكرار الـ Username أو Email
+            var userExists = await _context.Users
+                .AnyAsync(u => u.UserName == dto.UserName || u.Email == dto.Email);
+
+            if (userExists)
+            {
+                throw new ArgumentException("Username or Email already exists.");
+            }
+
+
+
+
             var result = await _userManager.CreateAsync(user, dto.Password);
+            await _context.SaveChangesAsync();
 
 
             if (!result.Succeeded)
@@ -92,25 +115,29 @@ namespace IEEE.Controllers
                 return BadRequest(result.Errors);
             }
 
-            if (!string.IsNullOrEmpty(dto.Role))
-            {
-                var roleResult = await _userManager.AddToRoleAsync(user, dto.Role);
-                if (!roleResult.Succeeded)
-                {
-                    return BadRequest(roleResult.Errors);
-                }
-            }
+
+            //_context.Users.Add(user);
 
             return Ok(new { message = "User created successfully", userId = user.Id });
         }
 
-        // PUT: api/Users/EditUser/{id}
+        // PUT: api/Users/EditUser/{id} 
         [HttpPut("EditUser/{id}")]
         public async Task<IActionResult> EditUser(string id, [FromBody] EditUserDto dto)
         {
             var user = await _userManager.FindByIdAsync(id);
             if (user == null)
                 return NotFound("User not found");
+
+
+            // التحقق من وجود الـ Role الجديد في AspNetRoles
+            var roleExists = await _context.Roles
+                .AnyAsync(r => r.Id == dto.RoleId);
+
+            if (!roleExists)
+            {
+                throw new ArgumentException($"Role with ID {dto.RoleId} does not exist in AspNetRoles.");
+            }
 
             user.FName = dto.FName;
             user.MName = dto.MName;
@@ -124,6 +151,8 @@ namespace IEEE.Controllers
             user.Faculty = dto.Faculty;
             user.Password = dto.Password;
             user.City = dto.City;
+            user.RoleId = dto.RoleId;
+            user.CommitteeId = dto.CommitteeIds.FirstOrDefault(); // Assuming the first committee is the primary one
 
             // 1. Load the selected committees from DB
             var selectedCommittees = await _context.Committees
@@ -138,10 +167,8 @@ namespace IEEE.Controllers
             {
                 user.Committees.Add(committee);
             }
-            var currentRoles = await _userManager.GetRolesAsync(user);
-            await _userManager.RemoveFromRolesAsync(user, currentRoles); // نحذف الرول القديمة
-            await _userManager.AddToRoleAsync(user, dto.RoleName); // نضيف الرول الجديدة
-            
+           
+
 
 
             var result = await _userManager.UpdateAsync(user);
@@ -154,7 +181,7 @@ namespace IEEE.Controllers
         [HttpGet("roles")]
         public async Task<IActionResult> GetRoles()
         {
-            var roles = _roleManager.Roles.Select(r => r.Name).ToList();
+            var roles =await _roleManager.Roles.Select(r => r.Name).ToListAsync();
             return Ok(roles);
         }
 

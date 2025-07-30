@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IEEE.Data
 {
-    public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
+    public class AppDbContext : IdentityDbContext<User, ApplicationRole, int>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -21,10 +21,18 @@ namespace IEEE.Data
             modelBuilder.ApplyConfiguration(new MeetingConfig());
             modelBuilder.ApplyConfiguration(new CommitteeConfig());
 
+            modelBuilder.Entity<User>()
+           .HasOne(u => u.Role)
+           .WithMany(r => r.Users)
+           .HasForeignKey(u => u.RoleId)
+           .HasPrincipalKey(r => r.Id) 
+           .OnDelete(DeleteBehavior.Restrict); 
+
+
 
         }
 
-        public DbSet<User> Users { get; set; }
+       // public DbSet<User> Users { get; set; }
         public DbSet<Tasks> Tasks { get; set; }
         public DbSet<Users_Tasks> Users_Tasks { get; set; }
         public DbSet<Committee> Committees { get; set; }

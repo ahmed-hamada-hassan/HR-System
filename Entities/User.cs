@@ -20,6 +20,10 @@ namespace IEEE.Entities
         public DateTime BirthOfDate { get;set; }  
         public bool IsActive { get; set; } = false;
         public int? CommitteeId { get; set; }
+        public int RoleId { get; set; }
+        public virtual ApplicationRole Role { get; set; }
+
+
 
         public ICollection<Tasks>? HeadTasks { get; set; } = new List<Tasks>();
         public ICollection<Users_Tasks>? Users_Tasks { get; set; } = new List<Users_Tasks>();
@@ -32,8 +36,6 @@ namespace IEEE.Entities
         public ICollection<Committee> HeadCommittees { get; set; } = new List<Committee>();
         
         public ICollection<Meeting> HeadMeetings { get; set; } = new List<Meeting>();
-
-
 
     }
 }

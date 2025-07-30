@@ -11,7 +11,7 @@ namespace IEEE.DTO.UserDTO
         public string Email { get; set; }
         public string City { get; set; }
         public string Faculty { get; set; }
-        public string RoleName { get; set; }
+        public int RoleId { get; set; }
         public string Year { get; set; }
         public string Goverment { get; set; }
         public string Phone { get; set; }

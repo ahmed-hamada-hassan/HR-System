@@ -1,6 +1,7 @@
 ﻿using IEEE.Data;
 using IEEE.DTO.UserDTO;
 using IEEE.Entities;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,15 +17,17 @@ namespace IEEE.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private readonly RoleManager<IdentityRole<int>> _roleManager;
+        private readonly Microsoft.AspNetCore.Identity.RoleManager<ApplicationRole> roleManager;
         private readonly AppDbContext _context;
-        private readonly UserManager<User> userManager;
+        private readonly Microsoft.AspNetCore.Identity.UserManager<User> userManager;
         private readonly IConfiguration config;
 
-        public AccountController(UserManager<User> UserManager , IConfiguration config)
+        public AccountController(Microsoft.AspNetCore.Identity.UserManager<User> UserManager, IConfiguration config, Microsoft.AspNetCore.Identity.RoleManager<ApplicationRole> _roleManager, AppDbContext context)
         {
             userManager = UserManager;
             this.config = config;
+            roleManager = _roleManager;
+            _context = context;
         }
 
 
@@ -35,124 +38,132 @@ namespace IEEE.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+                // 1. التحقق من وجود الـ Role في AspNetRoles
+                var roleExists = await _context.Roles
+                    .AnyAsync(r => r.Id == UserFromRequest.RoleId);
 
-
-            User user = new User
-            {
-                UserName = UserFromRequest.UserName,
-                FName = UserFromRequest.FName,
-                MName = UserFromRequest.MName,
-                LName = UserFromRequest.LName,
-                Faculty = UserFromRequest.Faculty,
-                Email = UserFromRequest.Email,
-                City = UserFromRequest.City,
-                Phone = UserFromRequest.Phone,
-                Sex = UserFromRequest.Sex,
-                Goverment = UserFromRequest.Goverment,
-                Year = UserFromRequest.Year,
-                IsActive = false
-            };
-
-            // حفظ المستخدم بالباسورد
-            IdentityResult result = await userManager.CreateAsync(user, UserFromRequest.Password);
-
-            if (result.Succeeded)
-            {
-                //  إضافة الرول
-                if (!string.IsNullOrEmpty(UserFromRequest.RoleName))
+                if (!roleExists)
                 {
-                    var roleExists = await _roleManager.RoleExistsAsync(UserFromRequest.RoleName);
-                    if (!roleExists)
-                        return BadRequest("Invalid role");
-
-                    await userManager.AddToRoleAsync(user, UserFromRequest.RoleName);
+                    return BadRequest($"Role with ID {UserFromRequest.RoleId} does not exist.");
                 }
 
-                // إضافة الكوميتيز
-                if (UserFromRequest.CommitteeIds != null && UserFromRequest.CommitteeIds.Any())
+                // 2. التحقق من عدم تكرار الـ Username أو Email
+                var existingUser = await userManager.FindByNameAsync(UserFromRequest.UserName);
+                if (existingUser != null)
                 {
-                    var committees = await _context.Committees
-                        .Where(c => UserFromRequest.CommitteeIds.Contains(c.Id))
-                        .ToListAsync();
-
-                    user.Committees = committees;
-
-                    _context.Users.Update(user); 
-                    await _context.SaveChangesAsync();
+                    return BadRequest("Username already exists.");
                 }
 
-                return Ok("User created successfully");
-            }
+                existingUser = await userManager.FindByEmailAsync(UserFromRequest.Email);
+                if (existingUser != null)
+                {
+                    return BadRequest("Email already exists.");
+                }
 
-            // في حالة وجود أخطاء
-            foreach (var item in result.Errors)
-            {
-                ModelState.AddModelError("Password", item.Description);
-            }
+                // 3. إنشاء الـ User
+                User user = new User
+                {
+                    UserName = UserFromRequest.UserName,
+                    FName = UserFromRequest.FName,
+                    MName = UserFromRequest.MName,
+                    LName = UserFromRequest.LName,
+                    Faculty = UserFromRequest.Faculty,
+                    Email = UserFromRequest.Email,
+                    City = UserFromRequest.City,
+                    Phone = UserFromRequest.Phone,
+                    Sex = UserFromRequest.Sex,
+                    Goverment = UserFromRequest.Goverment,
+                    Year = UserFromRequest.Year,
+                    IsActive = false,
+                    Password = UserFromRequest.Password, 
+                    RoleId = UserFromRequest.RoleId,
+                    CommitteeId = UserFromRequest.CommitteeIds != null && UserFromRequest.CommitteeIds.Any() ? UserFromRequest.CommitteeIds.FirstOrDefault() : null, // Assuming the first committee is assigned
 
-            return BadRequest(ModelState);
-        }
+                    EmailConfirmed = false
+                };
+
+                // 5. حفظ المستخدم بالباسورد
+                Microsoft.AspNetCore.Identity.IdentityResult result = await userManager.CreateAsync(user, UserFromRequest.Password);
+
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return BadRequest(ModelState);
+                }
+
+
+
+                return Ok(new { message = "User created successfully", userId = user.Id });
+
+          }
+
+
+
 
 
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login(LoginDto userFromRequest)
-        {
-            if (ModelState.IsValid)
+            public async Task<IActionResult> Login(LoginDto userFromRequest)
             {
-                User userfromdb = await userManager.FindByNameAsync(userFromRequest.UserName);
-
-                if (userfromdb != null)
+                if (ModelState.IsValid)
                 {
-                    bool found = await userManager.CheckPasswordAsync(userfromdb, userFromRequest.Password);
-                    if (found)
-                    {
-                        //  Check if user is active
-                        if (!userfromdb.IsActive)
-                        {
-                            return Unauthorized(new { message = "Your account is not activated yet." });
-                        }
+                    User userfromdb = await userManager.FindByNameAsync(userFromRequest.UserName);
 
-                        List<Claim> UserClaim = new List<Claim>
+                    if (userfromdb != null)
+                    {
+                        bool found = await userManager.CheckPasswordAsync(userfromdb, userFromRequest.Password);
+                        if (found)
+                        {
+                            //  Check if user is active
+                            if (!userfromdb.IsActive)
+                            {
+                                return Unauthorized(new { message = "Your account is not activated yet." });
+                            }
+
+                            List<Claim> UserClaim = new List<Claim>
                 {
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(ClaimTypes.NameIdentifier, userfromdb.Id.ToString()),
                     new Claim(ClaimTypes.Name, userfromdb.UserName)
                 };
 
-                        var UserRoles = await userManager.GetRolesAsync(userfromdb);
-                        foreach (var roleName in UserRoles)
-                        {
-                            UserClaim.Add(new Claim(ClaimTypes.Role, roleName));
+                            var UserRoles = await userManager.GetRolesAsync(userfromdb);
+                            foreach (var roleName in UserRoles)
+                            {
+                                UserClaim.Add(new Claim(ClaimTypes.Role, roleName));
+                            }
+
+                            JwtSecurityToken mytoken = new JwtSecurityToken(
+                                issuer: config["Jwt:IssuerIP"],
+                                audience: config["Jwt:AudienceIP"],
+                                expires: DateTime.Now.AddHours(1),
+                                claims: UserClaim,
+                                signingCredentials: new SigningCredentials(
+                                    new SymmetricSecurityKey(Encoding.UTF8.GetBytes("KiraSuperUltraMegaSecretKey!1234567890")),
+                                    SecurityAlgorithms.HmacSha256
+                                )
+                            );
+
+                            var tokenString = new JwtSecurityTokenHandler().WriteToken(mytoken);
+
+                            return Ok(new
+                            {
+                                token = tokenString
+                            });
                         }
-
-                        JwtSecurityToken mytoken = new JwtSecurityToken(
-                            issuer: config["Jwt:IssuerIP"] , 
-                            audience: config["Jwt:AudienceIP"],
-                            expires: DateTime.Now.AddHours(1),
-                            claims: UserClaim,
-                            signingCredentials: new SigningCredentials(
-                                new SymmetricSecurityKey(Encoding.UTF8.GetBytes("KiraSuperUltraMegaSecretKey!1234567890")),
-                                SecurityAlgorithms.HmacSha256
-                            )
-                        );
-
-                        var tokenString = new JwtSecurityTokenHandler().WriteToken(mytoken);
-
-                        return Ok(new
-                        {
-                            token = tokenString
-                        });
                     }
+
+                    ModelState.AddModelError("Username", "Username OR Password Invalid");
+                    return Unauthorized(ModelState);
                 }
 
-                ModelState.AddModelError("Username", "Username OR Password Invalid");
-                return Unauthorized(ModelState);
+                return BadRequest(ModelState);
             }
 
-            return BadRequest(ModelState);
+
         }
-
-
     }
-}
+

@@ -16,7 +16,6 @@ namespace IEEE.DTO.UserDTO
 
 
 
-        [Required]
-        public int RoleId { get; set; }  
+      
     }
 }
