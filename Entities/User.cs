@@ -21,6 +21,12 @@ namespace IEEE.Entities
         public virtual ApplicationRole Role { get; set; }
 
 
+
+        // اللجنة اللي هو نائب فيها
+        public int? ViceCommitteeId { get; set; }
+        public Committee? ViceCommittee { get; set; }
+
+
         public ICollection<Tasks>? HeadTasks { get; set; } = new List<Tasks>();
         public ICollection<Users_Tasks>? Users_Tasks { get; set; } = new List<Users_Tasks>();
 
@@ -30,7 +36,7 @@ namespace IEEE.Entities
         public ICollection<Committee> Committees { get; set; } = new List<Committee>();
 
         public ICollection<Committee> HeadCommittees { get; set; } = new List<Committee>();
-        
+
         public ICollection<Meeting> HeadMeetings { get; set; } = new List<Meeting>();
 
     }

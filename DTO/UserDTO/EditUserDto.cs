@@ -9,7 +9,6 @@ namespace IEEE.DTO.UserDTO
         public string MiddleName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
-        public string? NewPassword { get; set; }
         public Faculty Faculty {get; set; }
         public int RoleId { get; set; }
         public StudyYear Year { get; set; }

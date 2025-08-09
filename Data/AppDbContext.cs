@@ -49,10 +49,19 @@ namespace IEEE.Data
                 .Property(u => u.Faculty)
                 .HasConversion<string>();
 
+            // علاقة الـ Vices (واحد -> متعدد)
+            modelBuilder.Entity<Committee>()
+                .HasMany(c => c.Vices)
+                .WithOne(u => u.ViceCommittee)
+                .HasForeignKey(u => u.ViceCommitteeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+
+
 
         }
 
-       // public DbSet<User> Users { get; set; }
+        // public DbSet<User> Users { get; set; }
         public DbSet<Tasks> Tasks { get; set; }
         public DbSet<Users_Tasks> Users_Tasks { get; set; }
         public DbSet<Committee> Committees { get; set; }

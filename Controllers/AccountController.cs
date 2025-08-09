@@ -154,7 +154,21 @@ namespace IEEE.Controllers
                             return Ok(new
                             {
                                 token = tokenString ,
-                                userId = userfromdb.Id
+                                user = new
+                                {
+                                    id = userfromdb.Id,
+                                    firstName = userfromdb.FName,
+                                    middleName = userfromdb.MName,
+                                    lastName = userfromdb.LName,
+                                    email = userfromdb.Email,
+                                    phone = userfromdb.PhoneNumber,
+                                    sex = userfromdb.Sex,
+                                    goverment = userfromdb.Goverment,
+                                    year = userfromdb.Year,
+                                    faculty = userfromdb.Faculty,
+                                    roleId = userfromdb.RoleId,
+                                    committeeIds = userfromdb.Committees.Select(c => c.Id).ToList()
+                                }
                             });
                         }
                     }

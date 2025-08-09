@@ -40,7 +40,7 @@ namespace IEEE.Controllers
                         RoleId = u.RoleId,  
                         Eamil = u.Email , 
                         IsActive = u.IsActive , 
-                        CommitteeId = u.CommitteeId 
+                       // CommitteeId = u.CommitteeId 
 
                     }).ToList()
                 })
@@ -80,7 +80,7 @@ namespace IEEE.Controllers
                         Eamil = u.Email ,
                         RoleId = u.RoleId,
                         IsActive = u.IsActive,
-                        CommitteeId = u.CommitteeId
+                      //  CommitteeId = u.CommitteeId
                     }).ToList()
                 })
                 .FirstOrDefaultAsync();

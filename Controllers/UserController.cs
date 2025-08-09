@@ -50,7 +50,8 @@ namespace IEEE.Controllers
                     Eamil = user.Email,
                     IsActive = user.IsActive,
                     RoleId = user.RoleId  ,
-                    CommitteeId = user.CommitteeId,
+                    CommitteesId = user.Committees.Select(c => c.Id).ToList() // كل اللجان
+,
                 };
 
                 userdto.Add(dto);
@@ -83,7 +84,7 @@ namespace IEEE.Controllers
                 Eamil = user.Email,
                 IsActive = user.IsActive,
                 RoleId = user.RoleId,
-                CommitteeId = user.CommitteeId
+                CommitteesId = user.Committees.Select(c => c.Id).ToList() // كل اللجان
             };
 
             return Ok(dto);
@@ -149,9 +150,15 @@ namespace IEEE.Controllers
 
         // PUT: api/Users/EditUser/{id} 
         [HttpPut("EditUser/{id}")]
-        public async Task<IActionResult> EditUser(string id, [FromBody] EditUserDto dto)
+        public async Task<IActionResult> EditUser(int id, [FromBody] EditUserDto dto)
         {
-            var user = await _userManager.FindByIdAsync(id);
+
+            // تحميل المستخدم مع الـ Committees
+            var user = await _userManager.Users
+                .Include(u => u.Committees)
+                .FirstOrDefaultAsync(u => u.Id == id);
+
+
             if (user == null)
                 return NotFound("User not found");
 
@@ -164,7 +171,7 @@ namespace IEEE.Controllers
             {
                 throw new ArgumentException($"Role with ID {dto.RoleId} does not exist in AspNetRoles.");
             }
-
+            user.UserName = dto.Email;
             user.FName = dto.FirstName;
             user.MName = dto.MiddleName;
             user.LName = dto.LastName;
@@ -188,20 +195,12 @@ namespace IEEE.Controllers
             // 3. Add the new selected committees
             foreach (var committee in selectedCommittees)
             {
-                user.Committees.Add(committee);
+
+                if (!user.Committees.Any(c => c.Id == committee.Id))
+                {
+                    user.Committees.Add(committee);
+                }
             }
-
-            // تحديث الباسورد لو موجود
-            if (!string.IsNullOrWhiteSpace(dto.NewPassword))
-            {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var passwordResult = await _userManager.ResetPasswordAsync(user, token, dto.NewPassword);
-
-                if (!passwordResult.Succeeded)
-                    return BadRequest(passwordResult.Errors);
-            }
-
-
 
             var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
