@@ -109,11 +109,14 @@ namespace IEEE.Migrations
                     b.Property<int>("CommitteeId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("HeadId")
+                    b.Property<int?>("HeadId")
                         .HasColumnType("int");
 
                     b.Property<string>("Recap")
@@ -121,6 +124,10 @@ namespace IEEE.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -431,7 +438,8 @@ namespace IEEE.Migrations
                 {
                     b.HasOne("IEEE.Entities.User", "Head")
                         .WithMany("HeadCommittees")
-                        .HasForeignKey("HeadId");
+                        .HasForeignKey("HeadId")
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Head");
                 });
@@ -446,9 +454,7 @@ namespace IEEE.Migrations
 
                     b.HasOne("IEEE.Entities.User", "Head")
                         .WithMany("HeadMeetings")
-                        .HasForeignKey("HeadId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("HeadId");
 
                     b.Navigation("Committee");
 
