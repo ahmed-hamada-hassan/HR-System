@@ -6,11 +6,14 @@ using IEEE.DTO.CommitteeDto;
 using IEEE.DTO.MeetingsDto;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IEEE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "High Board,HR")]
+
     public class CommitteesController : ControllerBase
     {
         private readonly AppDbContext _context;

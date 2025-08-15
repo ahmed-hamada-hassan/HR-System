@@ -3,6 +3,7 @@ using IEEE.DTO.CommitteeDto;
 using IEEE.DTO.MeetingDto;
 using IEEE.DTO.UserDTO;
 using IEEE.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -11,6 +12,8 @@ namespace IEEE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "High Board,Head,Vice")]
+
     public class MeetingsController : ControllerBase
     {
         private readonly AppDbContext _context;
