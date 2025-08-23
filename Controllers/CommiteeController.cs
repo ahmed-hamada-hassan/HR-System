@@ -35,6 +35,7 @@ namespace IEEE.Controllers
         {
             var committees = await _context.Committees
          .Include(c => c.Users)
+          .Include(c => c.Vices)
          .ToListAsync();
 
             var committeesDto = committees.Select(c => new CommitteeGetDto
@@ -42,7 +43,7 @@ namespace IEEE.Controllers
                 Id = c.Id,
                 Name = c.Name,
                 HeadId = c.HeadId ?? 0 ,
-                MemberCount = _context.Users.Count(u => u.CommitteeId == c.Id), // حساب فعلي من الجدول
+                MemberCount = _context.Users.Count(u => u.CommitteeId == c.Id),
                 VicesId = c.Vices.Select(v => v.Id).ToList() , 
                 ImageUrl = c.ImageUrl,
             });
@@ -55,6 +56,7 @@ namespace IEEE.Controllers
         {
             var committee = await _context.Committees
                    .Include(c => c.Users)
+                   .Include(c=>c.Vices)
                    .FirstOrDefaultAsync(c => c.Id == id);
             if (committee == null)
             {
@@ -65,7 +67,7 @@ namespace IEEE.Controllers
                 Id = committee.Id,
                 Name = committee.Name,
                 HeadId = committee.HeadId ?? 0 ,
-                MemberCount = _context.Users.Count(u => u.CommitteeId == u.Id), // حساب فعلي من الجدول
+                MemberCount = _context.Users.Count(u => u.CommitteeId == committee.Id),
                 VicesId = committee.Vices.Select(v => v.Id).ToList(),
                 ImageUrl = committee.ImageUrl,
 
@@ -125,9 +127,17 @@ namespace IEEE.Controllers
             await _context.SaveChangesAsync();
             return Created("", new { message = "Committee created successfully" });
         }
+
+
+
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCommittee(int id, CommitteeUpdateDto committeeUpdateDto)
         {
+            // التحقق من صحة البيانات الأساسية
+            if (string.IsNullOrWhiteSpace(committeeUpdateDto.Name))
+                return BadRequest("Committee name is required.");
+
             // تحميل اللجنة
             var committee = await _context.Committees
                 .Include(c => c.Vices)
@@ -152,44 +162,64 @@ namespace IEEE.Controllers
                 if (headExistsInAnotherCommittee)
                     return BadRequest($"User {head.UserName} is already assigned as a head in another committee.");
             }
+
             // ✅ تحقق من الـ Vices
-            if (committeeUpdateDto.VicesId != null && committeeUpdateDto.VicesId.Any())
+            if (committeeUpdateDto.VicesId != null)
             {
-                var vices = await _context.Users
-                    .Where(u => committeeUpdateDto.VicesId.Contains(u.Id))
-                    .ToListAsync();
-
-                foreach (var vice in vices)
-                {
-                    if (vice.RoleId != 5)
-                        return BadRequest($"User {vice.UserName} does not have the required role to be a vice.");
-
-                    // تحقق إن الـ Vice مش في لجنة تانية
-                    bool isViceInAnotherCommittee = await _context.Committees
-                        .AnyAsync(c => c.Id != id && c.Vices.Any(v => v.Id == vice.Id));
-
-                    if (isViceInAnotherCommittee)
-                        return BadRequest($"User {vice.UserName} is already assigned as a vice in another committee.");
-                }
-
-                // مسح الـ Vices القديمة
+                // مسح الـ Vices القديمة أولاً
                 committee.Vices.Clear();
 
-                // إضافة الـ Vices الجديدة
-                foreach (var vice in vices)
+                // لو في vices جديدة، أضفهم
+                if (committeeUpdateDto.VicesId.Any())
                 {
-                    committee.Vices.Add(vice);
+                    var vices = await _context.Users
+                        .Where(u => committeeUpdateDto.VicesId.Contains(u.Id))
+                        .ToListAsync();
+
+                    // تحقق إن كل الـ IDs موجودة
+                    if (vices.Count != committeeUpdateDto.VicesId.Count)
+                        return BadRequest("Some vice users were not found.");
+
+                    foreach (var vice in vices)
+                    {
+                        if (vice.RoleId != 5)
+                            return BadRequest($"User {vice.UserName} does not have the required role to be a vice.");
+
+                        // تحقق إن الـ Vice مش في لجنة تانية
+                        bool isViceInAnotherCommittee = await _context.Committees
+                            .AnyAsync(c => c.Id != id && c.Vices.Any(v => v.Id == vice.Id));
+
+                        if (isViceInAnotherCommittee)
+                            return BadRequest($"User {vice.UserName} is already assigned as a vice in another committee.");
+                    }
+
+                    // إضافة الـ Vices الجديدة
+                    foreach (var vice in vices)
+                    {
+                        committee.Vices.Add(vice);
+                    }
                 }
             }
 
             // تحديث البيانات الأساسية
             committee.Name = committeeUpdateDto.Name;
-            committee.HeadId = committeeUpdateDto.HeadId ?? committee.HeadId;
-            committee.ImageUrl = committeeUpdateDto.ImageUrl ?? committee.ImageUrl;
 
-            await _context.SaveChangesAsync();
+            if (committeeUpdateDto.HeadId.HasValue)
+                committee.HeadId = committeeUpdateDto.HeadId.Value;
 
-            return NoContent();
+            if (!string.IsNullOrEmpty(committeeUpdateDto.ImageUrl))
+                committee.ImageUrl = committeeUpdateDto.ImageUrl;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                return StatusCode(500, "An error occurred while updating the committee.");
+            }
         }
 
 
@@ -198,20 +228,32 @@ namespace IEEE.Controllers
         public async Task<IActionResult> DeleteCommittee(int id)
         {
             var committee = await _context.Committees
-             .Include(c => c.Users) // لو عندك navigation property
-             .FirstOrDefaultAsync(c => c.Id == id);
+        .Include(c => c.Users)
+        .Include(c => c.Meetings)
+            .ThenInclude(m => m.Users_Meetings)
+        .FirstOrDefaultAsync(c => c.Id == id);
 
             if (committee == null)
                 return NotFound();
 
-            // فك الارتباط
-            var users = _context.Users.Where(u => u.CommitteeId == id);
-            foreach (var user in users)
+            // فك ارتباط الـ Users من الـ Committee
+            foreach (var user in committee.Users)
             {
                 user.CommitteeId = null;
             }
 
+            // امسح UsersMeetings المرتبطة بكل Meeting
+            foreach (var meeting in committee.Meetings)
+            {
+                _context.Users_Meetings.RemoveRange(meeting.Users_Meetings);
+            }
+
+            // امسح الـ Meetings نفسها
+            _context.Meetings.RemoveRange(committee.Meetings);
+
+            // امسح الـ Committee
             _context.Committees.Remove(committee);
+
             await _context.SaveChangesAsync();
 
             return NoContent();

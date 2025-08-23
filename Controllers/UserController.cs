@@ -35,25 +35,35 @@ namespace IEEE.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
-            var users = await _userManager.Users.Include(u => u.Committees).ToListAsync();
+            var users = await _userManager.Users
+                .Include(u => u.Committees)
+                .ToListAsync();
 
-            var userdto =  new List <GetUsersDto>();
+            var userdto = new List<GetUsersDto>();
 
             foreach (var user in users)
             {
-                var userRolesIds = await _context.UserRoles
-                    .Where(ur => ur.UserId == user.Id)
-                    .Select(ur => ur.RoleId)
-                    .ToListAsync();
+                var roleName = await _context.Roles
+                    .Where(r => r.Id == user.RoleId)
+                    .Select(r => r.Name)
+                    .FirstOrDefaultAsync();
 
                 var dto = new GetUsersDto
                 {
                     Id = user.Id,
-                    Eamil = user.Email,
+                    Email = user.Email,
+                    UserName = user.Email,
+                    FName = user.FName,
+                    MName = user.MName,
+                    LName = user.LName,
+                    Sex = user.Sex,
+                    PhoneNumber = user.PhoneNumber,
+                    Goverment = user.Goverment,
+                    Faculty = user.Faculty,
+                    Year = user.Year,
                     IsActive = user.IsActive,
-                    RoleId = user.RoleId  ,
-                    CommitteesId = user.Committees.Select(c => c.Id).ToList() // كل اللجان
-,
+                    RoleId = user.RoleId,
+                    CommitteesId = user.Committees.Select(c => c.Id).ToList(),
                 };
 
                 userdto.Add(dto);
@@ -62,7 +72,7 @@ namespace IEEE.Controllers
             return Ok(userdto);
         }
 
-        // GET: api/Users/{id}
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
@@ -70,31 +80,37 @@ namespace IEEE.Controllers
                 .Include(u => u.Committees)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
-            if (user == null)
-            {
+            if (user == null) 
+            { 
                 return NotFound(new { message = "User not found" });
             }
-
-            var userRolesIds = await _context.UserRoles
-                .Where(ur => ur.UserId == user.Id)
-                .Select(ur => ur.RoleId)
-                .ToListAsync();
 
             var dto = new GetUsersDto
             {
                 Id = user.Id,
-                Eamil = user.Email,
+                Email = user.Email,
+                UserName = user.Email,
+                FName = user.FName,
+                MName = user.MName,
+                LName = user.LName,
+                Faculty = user.Faculty,
+                Year = user.Year,
+                Sex = user.Sex,
+                PhoneNumber = user.PhoneNumber,
+                Goverment = user.Goverment,
                 IsActive = user.IsActive,
                 RoleId = user.RoleId,
-                CommitteesId = user.Committees.Select(c => c.Id).ToList() // كل اللجان
-            };
+                CommitteesId = user.Committees.Select(c => c.Id).ToList() ,
+           
+            }; 
+            
+            return Ok(dto); 
+        
+        } 
 
-            return Ok(dto);
-        }
 
-
-        // POST: api/Users/CreateUser
-        [HttpPost]
+          // POST: api/Users/CreateUser
+          [HttpPost]
         public async Task<IActionResult> CreateUser(createuserdto dto)
         {
             var user = new User
@@ -179,10 +195,10 @@ namespace IEEE.Controllers
             user.FName = dto.FirstName;
             user.MName = dto.MiddleName;
             user.LName = dto.LastName;
-            user.Sex  = dto.Sex;
+            user.Sex = dto.Sex;
             user.PhoneNumber = dto.Phone;
             user.Goverment = dto.Goverment;
-            user.Year = dto.Year; 
+            user.Year = dto.Year;
             user.Email = dto.Email;
             user.Faculty = dto.Faculty;
             user.RoleId = dto.RoleId;
@@ -208,10 +224,39 @@ namespace IEEE.Controllers
 
             var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
-                return Ok("User updated successfully");
+            {
+                // إعادة تحميل اليوزر مع الـ Committees و Role بعد التحديث
+                var updatedUser = await _userManager.Users
+                    .Include(u => u.Committees)
+                    .FirstOrDefaultAsync(u => u.Id == user.Id);
+
+                var response = new
+                {
+                    updatedUser.Id,
+                    updatedUser.FName,
+                    updatedUser.MName,
+                    updatedUser.LName,
+                    updatedUser.UserName,
+                    updatedUser.Email,
+                    updatedUser.Sex,
+                    updatedUser.PhoneNumber,
+                    updatedUser.Goverment,
+                    updatedUser.Year,
+                    updatedUser.Faculty,
+                    RoleId = updatedUser.RoleId,
+                    Committees = updatedUser.Committees.Select(c => new
+                    {
+                        c.Id,
+                        c.Name
+                    }).ToList()
+                };
+
+                return Ok(response);
+            }
 
             return BadRequest(result.Errors);
         }
+
 
         [HttpGet("roles")]
         public async Task<IActionResult> GetRoles()
