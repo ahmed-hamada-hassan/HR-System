@@ -20,9 +20,7 @@ namespace IEEE.DTO.UserDTO
         public string LastName { get; set; }
 
         [Required]
-        [StringLength(100, MinimumLength = 6)]
-
-        public string Password { get; set; }
+       public string Password { get; set; }
 
         [Required]
         [EmailAddress]

@@ -15,7 +15,12 @@ namespace IEEE.DTO.ArticleDto
         [StringLength(500)]
         public string Keywords { get; set; }
 
-        public IFormFile ? Photo { get; set; } 
+        public IFormFile ? Photo { get; set; }
+
+        public IFormFile? Video { get; set; }
+
+
+        public DateTime? Occuredat { get; set; }
 
 
         [Required]

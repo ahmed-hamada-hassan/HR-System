@@ -88,6 +88,9 @@ namespace IEEE.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<DateTime?>("Occuredat")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Photo")
                         .HasColumnType("nvarchar(max)");
 
@@ -95,6 +98,9 @@ namespace IEEE.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Video")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

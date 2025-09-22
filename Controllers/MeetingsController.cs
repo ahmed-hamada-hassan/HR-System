@@ -13,7 +13,6 @@ namespace IEEE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-   // [Authorize(Roles = "High Board,Head,Vice")]
 
     public class MeetingsController : ControllerBase
     {
@@ -23,6 +22,7 @@ namespace IEEE.Controllers
         {
             _context = context;
         }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetMeetingDto>>> GetMeetings()
         {
@@ -43,7 +43,6 @@ namespace IEEE.Controllers
 
             return Ok(meetings);
         }
-
 
         [HttpGet("{id}")]
         public async Task<ActionResult<GetMeetingDto>> GetMeeting(int id)
@@ -74,6 +73,9 @@ namespace IEEE.Controllers
 
         }
 
+
+
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         [HttpPost]
         public async Task<ActionResult> PostMeeting(CreateMeetingDto dto)
         {
@@ -126,6 +128,8 @@ namespace IEEE.Controllers
         //    return NoContent();
         //}
 
+
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMeeting(int id)
         {
@@ -151,6 +155,8 @@ namespace IEEE.Controllers
             return NoContent();
         }
 
+
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         [HttpPost("attendent")]
         public async Task<IActionResult> AddAttendent(CreateAttendentsDto createAttendentsDto)
         {

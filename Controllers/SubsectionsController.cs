@@ -1,6 +1,7 @@
 ﻿using IEEE.Data;
 using IEEE.DTO.SubsectionDto;
 using IEEE.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ namespace IEEE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class SubsectionsController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -63,6 +65,8 @@ namespace IEEE.Controllers
         }
 
 
+
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         // POST: api/Subsections
         [HttpPost]
         public async Task<IActionResult> CreateSubsection([FromForm] CreateSubsectionDto createSubsectionDto)
@@ -119,6 +123,7 @@ namespace IEEE.Controllers
         }
 
 
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         // PUT: api/Subsections/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSubsection(int id, [FromForm] CreateSubsectionDto updateSubsectionDto)
@@ -163,6 +168,9 @@ namespace IEEE.Controllers
             return NoContent();
         }
 
+
+
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
 
         // DELETE: api/Subsections/5
         [HttpDelete("{id}")]

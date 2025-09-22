@@ -88,6 +88,18 @@ builder.Services.AddCors(options =>
 });
 
 
+builder.Services.Configure<IdentityOptions>(options =>
+{
+// Password settings.
+options.Password.RequireDigit = false;
+options.Password.RequireLowercase = false;
+options.Password.RequireNonAlphanumeric = false;
+options.Password.RequireUppercase = false;
+options.Password.RequiredLength = 1;   // Minimum length
+options.Password.RequiredUniqueChars = 0;
+ });
+
+
 builder.Services.Configure<FormOptions>(options =>
 {
     options.MultipartBodyLengthLimit = 104857600; // 100 MB

@@ -1,6 +1,7 @@
 ﻿using IEEE.Data;
 using IEEE.DTO.ArticleDto;
 using IEEE.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ namespace IEEE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class ArticlesController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -43,6 +45,7 @@ namespace IEEE.Controllers
                      .ToArray();
         }
 
+
         // GET: api/Articles
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetArticle>>> GetArticles()
@@ -61,12 +64,17 @@ namespace IEEE.Controllers
                 Description = a.Description,
                 Keywords = ToKeywordsArray(a.Keywords),
                 Photo = string.IsNullOrEmpty(a.Photo) ? null : baseUrl + a.Photo,
+                Video = string.IsNullOrEmpty(a.Video) ? null : baseUrl + a.Video,
                 CategoryId = a.CategoryId,
-                CategoryName = a.Category?.Name
+                CategoryName = a.Category?.Name ,
+                Occuredat = a.Occuredat,
             });
 
             return Ok(result);
         }
+
+
+       
 
         // GET: api/Articles/5
         [HttpGet("{id}")]
@@ -86,12 +94,15 @@ namespace IEEE.Controllers
                 Description = a.Description,
                 Keywords = ToKeywordsArray(a.Keywords),
                 Photo = ToAbsoluteUrl(a.Photo),
+                Video = ToAbsoluteUrl(a.Video),
                 CategoryId = a.CategoryId,
-                CategoryName = a.Category?.Name
+                CategoryName = a.Category?.Name , 
+                Occuredat = a.Occuredat,
             };
 
             return Ok(dto);
         }
+
 
         // GET: api/Articles/5/show  (بيرجع الـ subsections كمان)
         [HttpGet("{id}/show")]
@@ -111,6 +122,8 @@ namespace IEEE.Controllers
                 Description = article.Description,
                 Keywords = ToKeywordsArray(article.Keywords),
                 Photo = ToAbsoluteUrl(article.Photo),
+                Video = ToAbsoluteUrl(article.Video),
+                Occuredat = article.Occuredat,
                 Category = new
                 {
                     CategoryId = article.Category?.Id,
@@ -128,6 +141,8 @@ namespace IEEE.Controllers
             return Ok(result);
         }
 
+
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         // POST: api/Articles
         [HttpPost]
         public async Task<ActionResult<GetArticle>> CreateArticle([FromForm] CreateArticleDto createArticleDto)
@@ -154,16 +169,37 @@ namespace IEEE.Controllers
                     await createArticleDto.Photo.CopyToAsync(stream);
                 }
 
-                photoPath = "/uploads/" + fileName; // هيتخزن Relative
+                photoPath = "/uploads/" + fileName; // Relative path
+            }
+
+            // Save video if provided
+            string? videoPath = null;
+            if (createArticleDto.Video != null && createArticleDto.Video.Length > 0)
+            {
+                var videoFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "videos");
+                if (!Directory.Exists(videoFolder))
+                    Directory.CreateDirectory(videoFolder);
+
+                var videoName = Guid.NewGuid() + Path.GetExtension(createArticleDto.Video.FileName);
+                var videoFilePath = Path.Combine(videoFolder, videoName);
+
+                using (var stream = new FileStream(videoFilePath, FileMode.Create))
+                {
+                    await createArticleDto.Video.CopyToAsync(stream);
+                }
+
+                videoPath = "/videos/" + videoName; // Relative path
             }
 
             var article = new Article
             {
                 Title = createArticleDto.Title,
                 Description = createArticleDto.Description,
-                Keywords = createArticleDto.Keywords, // بتتخزن CSV في الـ DB
+                Keywords = createArticleDto.Keywords,
                 Photo = photoPath,
-                CategoryId = createArticleDto.CategoryId
+                Video = videoPath,  // 👈 حفظ الفيديو
+                CategoryId = createArticleDto.CategoryId,
+                Occuredat = createArticleDto.Occuredat ?? DateTime.Now
             };
 
             _context.Articles.Add(article);
@@ -178,30 +214,39 @@ namespace IEEE.Controllers
                 Description = article.Description,
                 Keywords = ToKeywordsArray(article.Keywords),
                 Photo = ToAbsoluteUrl(article.Photo),
+                Video = ToAbsoluteUrl(article.Video), 
                 CategoryId = article.CategoryId,
-                CategoryName = article.Category?.Name
+                CategoryName = article.Category?.Name,
+                Occuredat = article.Occuredat
             };
 
             return CreatedAtAction(nameof(GetArticle), new { id = article.Id }, dto);
         }
 
+
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         // PUT: api/Articles/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateArticle(int id, [FromForm] CreateArticleDto updateArticleDto)
         {
             var article = await _context.Articles.FindAsync(id);
-            if (article == null) return NotFound();
+            if (article == null)
+                return NotFound();
 
+            // Check category exists
             var categoryExists = await _context.Categories
                 .AnyAsync(c => c.Id == updateArticleDto.CategoryId);
             if (!categoryExists)
                 return BadRequest("Category does not exist");
 
+            // Update basic fields
             article.Title = updateArticleDto.Title;
             article.Description = updateArticleDto.Description;
-            article.Keywords = updateArticleDto.Keywords; // نخزن CSV
+            article.Keywords = updateArticleDto.Keywords; // CSV
             article.CategoryId = updateArticleDto.CategoryId;
+            article.Occuredat = updateArticleDto.Occuredat ?? article.Occuredat;
 
+            // Update photo if provided
             if (updateArticleDto.Photo != null && updateArticleDto.Photo.Length > 0)
             {
                 var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
@@ -219,10 +264,31 @@ namespace IEEE.Controllers
                 article.Photo = "/uploads/" + fileName; // relative
             }
 
+            // Update video if provided
+            if (updateArticleDto.Video != null && updateArticleDto.Video.Length > 0)
+            {
+                var videosFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "videos");
+                if (!Directory.Exists(videosFolder))
+                    Directory.CreateDirectory(videosFolder);
+
+                var videoName = Guid.NewGuid() + Path.GetExtension(updateArticleDto.Video.FileName);
+                var videoPath = Path.Combine(videosFolder, videoName);
+
+                using (var stream = new FileStream(videoPath, FileMode.Create))
+                {
+                    await updateArticleDto.Video.CopyToAsync(stream);
+                }
+
+                article.Video = "/videos/" + videoName; // relative
+            }
+
             await _context.SaveChangesAsync();
             return NoContent();
         }
 
+
+
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         // DELETE: api/Articles/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteArticle(int id)

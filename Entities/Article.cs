@@ -20,6 +20,11 @@ namespace IEEE.Entities
 
         public string ? Photo { get; set; }
 
+        public string? Video { get; set; }
+
+
+        public DateTime ? Occuredat { get; set; }
+
         [Required]
         public int CategoryId { get; set; }
 

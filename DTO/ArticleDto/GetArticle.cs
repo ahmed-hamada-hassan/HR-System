@@ -8,6 +8,9 @@
         public string Description { get; set; }
         public string[] Keywords { get; set; }
         public string Photo { get; set; }
+        public string? Video { get; set; }
+
+        public DateTime? Occuredat { get; set; }
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
 

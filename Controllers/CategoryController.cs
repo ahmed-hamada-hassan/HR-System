@@ -2,6 +2,7 @@
 using IEEE.DTO.ArticleDto;
 using IEEE.DTO.CategoryDto;
 using IEEE.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,8 @@ namespace IEEE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+   
+
     public class CategoryController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -18,6 +21,8 @@ namespace IEEE.Controllers
         {
             _context = context;
         }
+
+
 
         // GET: api/Categories
         [HttpGet]
@@ -34,6 +39,8 @@ namespace IEEE.Controllers
 
             return Ok(categories);
         }
+
+
 
         // GET: api/Categories/5
         [HttpGet("{id}")]
@@ -96,6 +103,7 @@ namespace IEEE.Controllers
 
 
 
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         // POST: api/Categories
         [HttpPost]
         public async Task<ActionResult<CreateCategoryDto>> CreateCategory(CreateCategoryDto createCategoryDto)
@@ -116,6 +124,8 @@ namespace IEEE.Controllers
             return CreatedAtAction(nameof(GetCategory), new { id = category.Id }, categoryDto);
         }
 
+
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         // PUT: api/Categories/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(int id, CreateCategoryDto updateCategoryDto)
@@ -144,6 +154,9 @@ namespace IEEE.Controllers
             return NoContent();
         }
 
+
+
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         // DELETE: api/Categories/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)

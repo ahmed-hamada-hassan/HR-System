@@ -10,7 +10,6 @@ namespace IEEE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize(Roles = "High Board,Head,Vice,HR")]
 
     public class TasksController : ControllerBase
     {
@@ -20,6 +19,9 @@ namespace IEEE.Controllers
         {
             _context = context;
         }
+
+
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         [HttpPost]
         public async Task<IActionResult> CreateTask(TaskCreateDto taskCreateDto)
         {
@@ -39,6 +41,7 @@ namespace IEEE.Controllers
             return Ok(newTask);
         }
 
+
         [HttpGet]
         public async Task<IActionResult> GetTasks()
         {
@@ -55,6 +58,8 @@ namespace IEEE.Controllers
                 return BadRequest("no tasks found");
             return Ok(Tasks);
         }
+
+
         [HttpGet("Id")]
         public async Task<IActionResult> GetTask(int Id)
         {
@@ -77,6 +82,9 @@ namespace IEEE.Controllers
 
             return Ok(TaskReadDto);
         }
+
+
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         [HttpDelete("Id")]
         public async Task<IActionResult> DeleteTask(int Id)
         {
@@ -90,6 +98,8 @@ namespace IEEE.Controllers
             await _context.SaveChangesAsync();
             return NoContent();
         }
+
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         [HttpPost("{Id}/evaluations")]
         public async Task<IActionResult> SetTaskEvaluations(int Id,List<TaskEvaluation_CreateDto> EvaluationsDto)
         {
@@ -108,7 +118,8 @@ namespace IEEE.Controllers
             await _context.SaveChangesAsync();
             return Ok(Evaluations);
         }
-        
+
+
         [HttpGet("{Id}/evaluations")]
         public async Task<IActionResult> GetTaskEvaluations(int Id)
         {

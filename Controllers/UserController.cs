@@ -12,7 +12,6 @@ namespace IEEE.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-   // [Authorize(Roles = "High Board,Head,Vice")]
 
 
     public class UsersController : ControllerBase
@@ -30,6 +29,8 @@ namespace IEEE.Controllers
             _context = appDbContext;
         }
 
+
+      // [Authorize(Roles = "High Board,Head,Vice,Hr")]
 
         // GET: api/Users
         [HttpGet]
@@ -73,6 +74,7 @@ namespace IEEE.Controllers
         }
 
 
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
@@ -108,6 +110,7 @@ namespace IEEE.Controllers
         
         }
 
+        [Authorize(Roles = "High Board,Head,Vice,Hr")]
 
         // POST: api/Users/CreateUser
         [HttpPost]
@@ -172,6 +175,7 @@ namespace IEEE.Controllers
         }
 
 
+
         // PUT: api/Users/EditUser/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> EditUser(int id, [FromBody] EditUserDto dto)
@@ -231,20 +235,16 @@ namespace IEEE.Controllers
 
 
 
-
-
-
-
-
-
-
-            [HttpGet("roles")]
+        [HttpGet("roles")]
         public async Task<IActionResult> GetRoles()
         {
             var roles =await _roleManager.Roles.Select(r => r.Name).ToListAsync();
             return Ok(roles);
         }
 
+
+
+        [Authorize(Roles = "High Board,Head,Vice,HR")]
         // DELETE: api/Users/User/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)

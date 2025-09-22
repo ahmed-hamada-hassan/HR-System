@@ -8,6 +8,8 @@
         public int? MemberCount { get; set; }
         public List<int> VicesId { get; set; }
 
+        public string ?Description { get; set; }
+
         public string? ImageUrl { get; set; }
 
     }
