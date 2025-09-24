@@ -80,6 +80,8 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         [HttpPost]
         public async Task<ActionResult> PostMeeting(CreateMeetingDto dto)
         {
@@ -134,6 +136,8 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMeeting(int id)
         {
@@ -161,6 +165,8 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         [HttpPost("attendent")]
         public async Task<IActionResult> AddAttendent(CreateAttendentsDto createAttendentsDto)
         {

@@ -111,6 +111,8 @@ namespace IEEE.Controllers
         }
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         // POST: api/Users/CreateUser
         [HttpPost]
         public async Task<IActionResult> CreateUser(createuserdto dto)
@@ -245,6 +247,7 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
         // DELETE: api/Users/User/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)

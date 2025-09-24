@@ -70,6 +70,8 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         // POST: api/Subsections
         [HttpPost]
         public async Task<IActionResult> CreateSubsection([FromForm] CreateSubsectionDto createSubsectionDto)
@@ -127,6 +129,8 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         // PUT: api/Subsections/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateSubsection(int id, [FromForm] CreateSubsectionDto updateSubsectionDto)
@@ -174,6 +178,8 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
 
         // DELETE: api/Subsections/5
         [HttpDelete("{id}")]

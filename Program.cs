@@ -58,7 +58,10 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("HeadOnly", policy => policy.RequireClaim("RoleId", "2"));
     options.AddPolicy("MemberOnly", policy => policy.RequireClaim("RoleId", "3"));
     options.AddPolicy("HROnly", policy => policy.RequireClaim("RoleId", "4"));
-    options.AddPolicy("ViceOnly", policy => policy.RequireClaim("RoleId", "5")); 
+    options.AddPolicy("ViceOnly", policy => policy.RequireClaim("RoleId", "5"));
+
+    options.AddPolicy("ActiveUserOnly", policy =>
+        policy.RequireClaim("IsActive", "True"));
 });
 
 builder.Services.AddControllers()

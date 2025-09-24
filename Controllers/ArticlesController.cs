@@ -143,6 +143,8 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         // POST: api/Articles
         [HttpPost]
         public async Task<ActionResult<GetArticle>> CreateArticle([FromForm] CreateArticleDto createArticleDto)
@@ -225,6 +227,8 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         // PUT: api/Articles/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateArticle(int id, [FromForm] CreateArticleDto updateArticleDto)
@@ -289,6 +293,8 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         // DELETE: api/Articles/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteArticle(int id)

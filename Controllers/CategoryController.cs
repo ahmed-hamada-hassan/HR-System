@@ -102,6 +102,8 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         // POST: api/Categories
         [HttpPost]
         public async Task<ActionResult<CreateCategoryDto>> CreateCategory(CreateCategoryDto createCategoryDto)
@@ -124,6 +126,8 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         // PUT: api/Categories/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCategory(int id, CreateCategoryDto updateCategoryDto)
@@ -155,6 +159,8 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         // DELETE: api/Categories/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(int id)

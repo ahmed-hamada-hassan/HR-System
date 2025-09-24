@@ -22,6 +22,8 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         [HttpPost]
         public async Task<IActionResult> CreateTask(TaskCreateDto taskCreateDto)
         {
@@ -85,6 +87,7 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
         [HttpDelete("Id")]
         public async Task<IActionResult> DeleteTask(int Id)
         {
@@ -100,6 +103,8 @@ namespace IEEE.Controllers
         }
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         [HttpPost("{Id}/evaluations")]
         public async Task<IActionResult> SetTaskEvaluations(int Id,List<TaskEvaluation_CreateDto> EvaluationsDto)
         {

@@ -87,6 +87,8 @@ namespace IEEE.Controllers
         }
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
 
         [HttpPost]
         public async Task<ActionResult> CreateCommittee([FromForm] CommitteeCreateDto dto)
@@ -172,6 +174,8 @@ namespace IEEE.Controllers
         }
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         [HttpPut("{id}")]
         public async Task<IActionResult> PutCommittee(int id, [FromForm] CommitteeUpdateDto committeeUpdateDto) // 👈 FromForm
         {
@@ -261,6 +265,8 @@ namespace IEEE.Controllers
 
 
         [Authorize(Roles = "High Board,Head,Vice,HR")]
+        [Authorize(Policy = "ActiveUserOnly")]
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCommittee(int id)
         {

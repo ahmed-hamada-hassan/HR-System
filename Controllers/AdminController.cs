@@ -9,6 +9,8 @@ namespace IEEE.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = "High Board,HR")]
+    [Authorize(Policy = "ActiveUserOnly")]
+
 
     public class AdminController : ControllerBase
     {
