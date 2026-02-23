@@ -1,19 +1,16 @@
-﻿using IEEE.Data;
+using IEEE.Data;
 using IEEE.Entities;
+using IEEE.JsonConverters;
+using IEEE.Middleware;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddControllers();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -26,9 +23,20 @@ builder.Services.AddIdentity<User, ApplicationRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddControllers()
-    .AddJsonOptions(opts =>
-        opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+builder.Services
+    .AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Existing enum converter
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+
+        // Flexible DateTime converters (non-nullable and nullable)
+        options.JsonSerializerOptions.Converters.Add(new FlexibleDateTimeConverter());
+        options.JsonSerializerOptions.Converters.Add(new FlexibleNullableDateTimeConverter());
+
+        // Existing reference handling
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 
 builder.Services.AddAuthentication(options =>
 {
@@ -64,12 +72,6 @@ builder.Services.AddAuthorization(options =>
         policy.RequireClaim("IsActive", "True"));
 });
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-    });
-
 // FIXED CORS CONFIGURATION
 builder.Services.AddCors(options =>
 {
@@ -80,8 +82,8 @@ builder.Services.AddCors(options =>
                   "https://ieee-mangment.vercel.app",  // Your production frontend
                   "http://localhost:3000",             // Local development
                   "http://localhost:5173",             // Vite default port
-                  "http://localhost:4173"     ,
-                  "http://192.168.1.96:5173" , // Vite preview port و 
+                  "http://localhost:4173",
+                  "http://192.168.1.96:5173", // Vite preview port و 
                   "https://localhost:7171"
               )
               .AllowAnyHeader()
@@ -93,14 +95,14 @@ builder.Services.AddCors(options =>
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
-// Password settings.
-options.Password.RequireDigit = false;
-options.Password.RequireLowercase = false;
-options.Password.RequireNonAlphanumeric = false;
-options.Password.RequireUppercase = false;
-options.Password.RequiredLength = 1;   // Minimum length
-options.Password.RequiredUniqueChars = 0;
- });
+    // Password settings.
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequiredLength = 1;   // Minimum length
+    options.Password.RequiredUniqueChars = 0;
+});
 
 
 builder.Services.Configure<FormOptions>(options =>
@@ -123,6 +125,8 @@ app.UseStaticFiles();
 
 // CORS must be used BEFORE routing and authentication
 app.UseCors("AllowFrontend");
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
